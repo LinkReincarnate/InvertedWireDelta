@@ -1,0 +1,1 @@
+An inverted hanging delta 3d printer.  To be held aloft via balloon or quadrocopter.  
