@@ -1976,7 +1976,6 @@
 
 /* 
 DaveX plan for Teensylu/printrboard-type pinouts (ref teensylu & sprinter) for a TeensyBreadboard:
-
                                USB
            GND       GND |-----#####-----| +5V              ATX +5SB
      ATX PS_ON    PWM 27 |b7   #####   b6| 26    PWM*       Stepper Enable 
@@ -1999,7 +1998,6 @@ DaveX plan for Teensylu/printrboard-type pinouts (ref teensylu & sprinter) for a
            Fan    PWM 16 |c6   c d T   f6| 44 A6            Bed TC
                       17 |c7   * * *   f7| 45 A7            Extruder TC * 4.7k * +5        
                          -----------------                  
-
       Interior E4: 36, INT4
       Interior E5: 37, INT5
       Interior PA0-7: 28-35  -- Printrboard and Teensylu use these pins for step & direction:
@@ -2009,7 +2007,6 @@ DaveX plan for Teensylu/printrboard-type pinouts (ref teensylu & sprinter) for a
        Z DIR   33 a5  a1 29 X DIR
        E STEP  34 a6  a2 30 Y STEP
        E DIR   35 a7  a3 31 Y DIR
-
 */
 
 #ifndef AT90USBxx_TEENSYPP_ASSIGNMENTS  // use Teensyduino Teensy++2.0 pin assignments instead of Marlin alphabetical.
