@@ -309,14 +309,15 @@ int EtoPPressure=0;
   #define COS_60 0.5
   // these are the default values, can be overriden with M665
   float delta_radius= DELTA_RADIUS;
-  float delta_tower1_x= -SIN_60*delta_radius; // front left tower
-  float delta_tower1_y= -COS_60*delta_radius;	   
-  float delta_tower2_x=  SIN_60*delta_radius; // front right tower
-  float delta_tower2_y= -COS_60*delta_radius;	   
+  float delta_tower1_x= SIN_60*delta_radius; // front left tower
+  float delta_tower1_y= COS_60*delta_radius;	   
+  float delta_tower2_x= -SIN_60*delta_radius; // front right tower
+  float delta_tower2_y= COS_60*delta_radius;	   
   float delta_tower3_x= 0.0;                  // back middle tower
-  float delta_tower3_y= delta_radius;
+  float delta_tower3_y= -delta_radius;
   float delta_diagonal_rod= DELTA_DIAGONAL_ROD;
-  float delta_diagonal_rod_2= sq(delta_diagonal_rod);
+  //float delta_diagonal_rod_2= sq(delta_diagonal_rod);
+  float delta_z0 = sqrt( sq(delta_diagonal_rod) - sq(delta_radius) );
   float delta_segments_per_second= DELTA_SEGMENTS_PER_SECOND;
 #endif
 
@@ -4003,23 +4004,31 @@ void recalc_delta_settings(float radius, float diagonal_rod)
 	 delta_tower2_y= -COS_60*radius;	   
 	 delta_tower3_x= 0.0;                  // back middle tower
 	 delta_tower3_y= radius;
-	 delta_diagonal_rod_2= sq(diagonal_rod);
+         delta_z0 = sqrt( sq(delta_diagonal_rod) - sq(delta_radius) ); //for string delta
+
+	 //delta_diagonal_rod_2= sq(diagonal_rod);  //standard delta
 }
 
+
+//string delta calcs:
 void calculate_delta(float cartesian[3])
 {
-  delta[X_AXIS] = sqrt(delta_diagonal_rod_2
-                       - sq(delta_tower1_x-cartesian[X_AXIS])
-                       - sq(delta_tower1_y-cartesian[Y_AXIS])
-                       ) + cartesian[Z_AXIS];
-  delta[Y_AXIS] = sqrt(delta_diagonal_rod_2
-                       - sq(delta_tower2_x-cartesian[X_AXIS])
-                       - sq(delta_tower2_y-cartesian[Y_AXIS])
-                       ) + cartesian[Z_AXIS];
-  delta[Z_AXIS] = sqrt(delta_diagonal_rod_2
-                       - sq(delta_tower3_x-cartesian[X_AXIS])
-                       - sq(delta_tower3_y-cartesian[Y_AXIS])
-                       ) + cartesian[Z_AXIS];
+  float z_squared;
+ 
+  z_squared = sq(delta_z0 - cartesian[Z_AXIS]);
+  
+  delta[X_AXIS] = sqrt( z_squared +
+                        sq(-cartesian[X_AXIS]-delta_tower1_x) +
+                        sq(-cartesian[Y_AXIS]-delta_tower1_y)
+                       ) - delta_diagonal_rod;
+  delta[Y_AXIS] = sqrt( z_squared +
+                        sq(-cartesian[X_AXIS]-delta_tower2_x) +
+                        sq(-cartesian[Y_AXIS]-delta_tower2_y)
+                       ) - delta_diagonal_rod;
+  delta[Z_AXIS] = sqrt( z_squared +
+                        sq(-cartesian[X_AXIS]-delta_tower3_x) +
+                        sq(-cartesian[Y_AXIS]-delta_tower3_y)
+                       ) - delta_diagonal_rod;
   /*
   SERIAL_ECHOPGM("cartesian x="); SERIAL_ECHO(cartesian[X_AXIS]);
   SERIAL_ECHOPGM(" y="); SERIAL_ECHO(cartesian[Y_AXIS]);
@@ -4030,6 +4039,34 @@ void calculate_delta(float cartesian[3])
   SERIAL_ECHOPGM(" z="); SERIAL_ECHOLN(delta[Z_AXIS]);
   */
 }
+
+
+// standard DELTA calcs:
+//void calculate_delta(float cartesian[3])
+//{
+//  delta[X_AXIS] = sqrt(delta_diagonal_rod_2
+//                       - sq(delta_tower1_x-cartesian[X_AXIS])
+//                       - sq(delta_tower1_y-cartesian[Y_AXIS])
+//                       ) + cartesian[Z_AXIS];
+//  delta[Y_AXIS] = sqrt(delta_diagonal_rod_2
+//                       - sq(delta_tower2_x-cartesian[X_AXIS])
+//                       - sq(delta_tower2_y-cartesian[Y_AXIS])
+//                       ) + cartesian[Z_AXIS];
+//  delta[Z_AXIS] = sqrt(delta_diagonal_rod_2
+//                       - sq(delta_tower3_x-cartesian[X_AXIS])
+//                       - sq(delta_tower3_y-cartesian[Y_AXIS])
+//                       ) + cartesian[Z_AXIS];
+//  /*
+//  SERIAL_ECHOPGM("cartesian x="); SERIAL_ECHO(cartesian[X_AXIS]);
+//  SERIAL_ECHOPGM(" y="); SERIAL_ECHO(cartesian[Y_AXIS]);
+//  SERIAL_ECHOPGM(" z="); SERIAL_ECHOLN(cartesian[Z_AXIS]);
+//
+//  SERIAL_ECHOPGM("delta x="); SERIAL_ECHO(delta[X_AXIS]);
+//  SERIAL_ECHOPGM(" y="); SERIAL_ECHO(delta[Y_AXIS]);
+//  SERIAL_ECHOPGM(" z="); SERIAL_ECHOLN(delta[Z_AXIS]);
+//  */
+//}
+//******************
 #endif
 
 void prepare_move()
