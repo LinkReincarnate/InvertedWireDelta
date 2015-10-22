@@ -9,6 +9,7 @@ module printerBody(){
             //main body lower
             translate([0,0,-81])
             cylinder($fn=6, h=5, r=70);
+            //upper and lower connecting bars
             
             //TopLineAnchors
                 rotate(30, [0, 0, 1])
@@ -17,7 +18,9 @@ module printerBody(){
                     translate([0,63,10]){
                         rotate(90 , [0,0,1])
                             difference(){
-                                cube([5,10,15], center=true);
+                                translate([0,0,-91])
+                                cylinder(h=100, r=5);
+                                //cube([5,10,15], center=true);
                                 rotate([0,90,0]){
                                     translate([-1,0,-6]){
                                         cylinder(h=12, r=2);
