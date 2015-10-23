@@ -119,10 +119,10 @@ module nema17DiffBlock(){
       //ring
     color([0.7,0.7,0.7]) translate(v=[0,0,ringH/2]) cylinder(r=ringR+1, h=ringH+30, center=true);
       
-    translate(v=[holeL,holeL,0-bodyL/2]) cylinder(r = holeR, h = bodyL+40, center=true);
-    translate(v=[-holeL,holeL,0-bodyL/2]) cylinder(r = holeR, h = bodyL+40, center=true);
-    translate(v=[-holeL,-holeL,0-bodyL/2]) cylinder(r = holeR, h = bodyL+40, center=true);
-    translate(v=[holeL,-holeL,0-bodyL/2]) cylinder(r = holeR, h = bodyL+40, center=true);
+    translate(v=[holeL,holeL,0]) cylinder(r = holeR, h = bodyL, center=true);
+    translate(v=[-holeL,holeL,0]) cylinder(r = holeR, h = bodyL, center=true);
+    translate(v=[-holeL,-holeL,0]) cylinder(r = holeR, h = bodyL, center=true);
+    translate(v=[holeL,-holeL,0]) cylinder(r = holeR, h = bodyL, center=true);
   
   
 }
