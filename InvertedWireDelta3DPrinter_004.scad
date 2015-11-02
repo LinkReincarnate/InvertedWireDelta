@@ -5,17 +5,17 @@ module printerBody(){
     difference(){
         union(){
             //MainBodyTop
-            cylinder($fn=6, h=5, r=70);
+            cylinder($fn=6, h=5, r=100);
             //main body lower
             translate([0,0,-81])
-            cylinder($fn=6, h=5, r=70);
+            cylinder($fn=6, h=5, r=100);
             //upper and lower connecting bars
             
             //TopLineAnchors
-                rotate(30, [0, 0, 1])
+            rotate(30, [0, 0, 1])
                for ( i = [0 : 5] ){
                   rotate( i * 60, [0, 0, 1])
-                    translate([0,63,10]){
+                    translate([0,95,10]){
                         rotate(90 , [0,0,1])
                             difference(){
                                 translate([0,0,-91])
@@ -37,7 +37,7 @@ module printerBody(){
         //StepperMounts
             for ( i = [0 : 2] ){
                     rotate( i * 120, [0, 0, 30])
-                    translate([0,33,8]){
+                    translate([0,65,8]){
                         rotate([0,0,0]){
                             #nema17DiffBlock();
                             //#nema17();   
