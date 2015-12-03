@@ -33,11 +33,11 @@
 // User-specified version info of this build to display in [Pronterface, etc] terminal window during
 // startup. Implementation of an idea by Prof Braino to inform user that any changes made to this
 // build by the user have been successfully uploaded into firmware.
-#define STRING_VERSION "1.0.2.tobbelobb"
-#define STRING_URL "github.com/tobbelobb/hangprinter"
-#define STRING_VERSION_CONFIG_H __DATE__ " " __TIME__ // build date and time
-#define STRING_CONFIG_H_AUTHOR "tobbelobb" // Who made the changes.
-#define STRING_SPLASH_LINE1 "v" STRING_VERSION // will be shown during bootup in line 1
+#define STRING_VERSION "1.0 InvertedWireDelta"
+#define STRING_URL "https://github.com/LinkReincarnate/InvertedWireDelta"
+#define STRING_VERSION_CONFIG_H __DATE__ "12-3-15__12:38am" __TIME__ // build date and time
+#define STRING_CONFIG_H_AUTHOR "LinkReincarnate" // Who made the changes.
+#define STRING_SPLASH_LINE1 "v1.0" STRING_VERSION // will be shown during bootup in line 1
 //#define STRING_SPLASH_LINE2 STRING_VERSION_CONFIG_H // will be shown during bootup in line2
 
 // SERIAL_PORT selects which serial port should be used for communication with the host.
