@@ -56,7 +56,7 @@
 // The following define selects which electronics board you have.
 // Please choose the name from boards.h that matches your setup
 #ifndef MOTHERBOARD
-#define MOTHERBOARD BOARD_RAMPS_13_EFB
+#define MOTHERBOARD BOARD_RAMPS_OLD
 #endif
 
 // Define this to set a custom name for your generic Mendel,
@@ -67,8 +67,9 @@
 // #define MACHINE_UUID "00000000-0000-0000-0000-000000000000"
 
 // This defines the number of extruders
-// Commented out on Slideprinter since it doesn't have extruders
-//#define EXTRUDERS 1
+// If you have no extruders, uncomment this and code is more likely to compile (implemented while
+// developing Hangprinter)
+#define EXTRUDERS 1
 
 //// The following define selects which power supply you have. Please choose the one that matches your setup
 // 1 = ATX
@@ -89,25 +90,27 @@
 #define DELTA_SEGMENTS_PER_SECOND 20
 
 // NOTE! all values here MUST be floating point, so always have a decimal point in them
-#define ANCHOR_A_X -500.0 // anchor point A's Carthesian x-coordinate. In mm
-#define ANCHOR_A_Y -500.0
-#define ANCHOR_A_Z 10.0 // measured from print surface to frame middle. In mm
+// These values are the difference between measurement stick top (along sides of Hangprinter when
+// placed in origo) and frame measurment point,
+// alternatively measure from one fish eye, along corresponding line to the lines anchor point.
+#define ANCHOR_A_X 887.0 // anchor point A's Carthesian x-coordinate. In mm
+#define ANCHOR_A_Y -575.0
+#define ANCHOR_A_Z -130.0 // measured from print surface to frame middle. In mm
 #define INITIAL_LENGTH_A sqrt(ANCHOR_A_X*ANCHOR_A_X + ANCHOR_A_Y*ANCHOR_A_Y + ANCHOR_A_Z*ANCHOR_A_Z)
-// This gives A-length of 707.177
-#define ANCHOR_B_X 500.0
-#define ANCHOR_B_Y -500.0
-#define ANCHOR_B_Z 10.0 // measured from print surface to frame middle. In mm
+// This gives A-length of sqrt(887^2 + 575^2 + 130^2) = 1065
+#define ANCHOR_B_X 0.0
+#define ANCHOR_B_Y 867.0
+#define ANCHOR_B_Z -119.0 // measured from print surface to frame middle. In mm
 #define INITIAL_LENGTH_B sqrt(ANCHOR_B_X*ANCHOR_B_X + ANCHOR_B_Y*ANCHOR_B_Y + ANCHOR_B_Z*ANCHOR_B_Z)
-// This gives B-length of 707.177
-#define ANCHOR_C_X 0.0
-#define ANCHOR_C_Y 500.0
-#define ANCHOR_C_Z 10.0 // measured from print surface to frame middle. In mm
+// This gives B-length of sqrt(867^2 + 119^2) = 875
+#define ANCHOR_C_X -1429.0
+#define ANCHOR_C_Y -1317.0
+#define ANCHOR_C_Z -141.0 // measured from print surface to frame middle. In mm
 #define INITIAL_LENGTH_C sqrt(ANCHOR_C_X*ANCHOR_C_X + ANCHOR_C_Y*ANCHOR_C_Y + ANCHOR_C_Z*ANCHOR_C_Z)
-// This gives A-length of sqrt(500^2 + 10^2) = 500.099...
+// This gives C-length of sqrt(1429^2 + 1317^2 + 141^2) = 1948.4
 // It's important that middle of frame D is directly above (x,y) = (0,0)
-#define ANCHOR_D_Z 1000.0 // measured from print surface to frame middle. In mm
+#define ANCHOR_D_Z 2286.0 // measured along vertical line, from fish eye to anchor point. In mm
 #define INITIAL_LENGTH_D ANCHOR_D_Z
-// This gives D-length of 1000.0
 
 //===========================================================================
 //============================= Thermal Settings ============================
@@ -147,8 +150,8 @@
 // 147 is Pt100 with 4k7 pullup
 // 110 is Pt100 with 1k pullup (non standard)
 
-#ifdef EXTRUDER
-#define TEMP_SENSOR_0 -1
+#ifdef EXTRUDERS
+#define TEMP_SENSOR_0 5 // Setting gotten from wiki.e3d-online.net instructions for V6 hot end
 #define TEMP_SENSOR_1 -1
 #define TEMP_SENSOR_2 0
 #define TEMP_SENSOR_BED 0
@@ -156,7 +159,7 @@
 
 // This makes temp sensor 1 a redundant sensor for sensor 0. If the temperatures difference between these sensors is to high the print will be aborted.
 //#define TEMP_SENSOR_1_AS_REDUNDANT
-#define MAX_REDUNDANT_TEMP_SENSOR_DIFF 10
+//#define MAX_REDUNDANT_TEMP_SENSOR_DIFF 10
 
 // Actual temperature must be close to target for this long before M109 returns success
 #define TEMP_RESIDENCY_TIME 10  // (seconds)
@@ -174,7 +177,7 @@
 // When temperature exceeds max temp, your heater will be switched off.
 // This feature exists to protect your hotend from overheating accidentally, but *NOT* from thermistor short/failure!
 // You should use MINTEMP for thermistor short/failure protection.
-#define HEATER_0_MAXTEMP 275
+#define HEATER_0_MAXTEMP 290
 #define HEATER_1_MAXTEMP 275
 #define HEATER_2_MAXTEMP 275
 #define BED_MAXTEMP 150
@@ -208,10 +211,15 @@
 #define PID_dT ((OVERSAMPLENR * 10.0)/(F_CPU / 64.0 / 256.0)) //sampling period of the temperature routine
 
 // If you are using a pre-configured hotend then you can use one of the value sets by uncommenting it
+// Hangprinter (Volcano, e3d V6, Ramps)
+#define  DEFAULT_Kp 39.76
+#define  DEFAULT_Ki 3.26
+#define  DEFAULT_Kd 121.18
+
 // Ultimaker
-#define  DEFAULT_Kp 22.2
-#define  DEFAULT_Ki 1.08
-#define  DEFAULT_Kd 114
+//#define  DEFAULT_Kp 22.2
+//#define  DEFAULT_Ki 1.08
+//#define  DEFAULT_Kd 114
 
 // MakerGear
 //    #define  DEFAULT_Kp 7.0
@@ -266,7 +274,7 @@
 
 //this prevents dangerous Extruder moves, i.e. if the temperature is under the limit
 //can be software-disabled for whatever purposes by
-// #define PREVENT_DANGEROUS_EXTRUDE
+#define PREVENT_DANGEROUS_EXTRUDE
 //if PREVENT_DANGEROUS_EXTRUDE is on, you can still disable (uncomment) very long bits of extrusion separately.
 // #define PREVENT_LENGTHY_EXTRUDE
 
@@ -303,8 +311,8 @@
 // uncomment the 2 defines below:
 
 // Parameters for all extruder heaters
-//#define THERMAL_RUNAWAY_PROTECTION_PERIOD 40 //in seconds
-//#define THERMAL_RUNAWAY_PROTECTION_HYSTERESIS 4 // in degree Celsius
+#define THERMAL_RUNAWAY_PROTECTION_PERIOD 100 //in seconds
+#define THERMAL_RUNAWAY_PROTECTION_HYSTERESIS 4 // in degree Celsius
 
 // If you want to enable this feature for your bed heater,
 // uncomment the 2 defines below:
@@ -431,17 +439,23 @@ const bool Z_MAX_ENDSTOP_INVERTING = true; // set to true to invert the logic of
 #define HOMING_FEEDRATE {200*60, 200*60, 200*60, 200*60, 0}  // set the homing speeds (mm/min)
 
 // default settings
-// Steps per revolution: 200*2 (factor 2 from 1/2 step microstepping)
+// Steps per revolution: m*200 (factor m from microstepping)
 // Snelle radius: 34.25
 // Sandwich pitch radius: 41.11
 // Motor gear pitch radius: 13.33
 //
-// 2*200 / ((34.25/41.11) * 2 * pi * 13.33) = 5.732
-#define DEFAULT_AXIS_STEPS_PER_UNIT   {5.732, 5.732, 5.732, 5.732, 760.0}  // default steps per unit for Hangprinter
-#define DEFAULT_MAX_FEEDRATE          {500, 500, 500, 500, 25}    // (mm/sec)
-#define DEFAULT_MAX_ACCELERATION      {9000,9000,9000,9000,10000}    // X, Y, Z, E maximum start speed for accelerated moves. E default values are good for skeinforge 40+, for older versions raise them a lot.
+//  4*200 / ((34.25/41.11) * 2 * pi * 13.33) = 11.465 
+//  8*200 / ((34.25/41.11) * 2 * pi * 13.33) = 22.930 
+// 16*200 / ((34.25/41.11) * 2 * pi * 13.33) = 45.859
+//
+//  4*200 / ((33/42.22) * 2 * pi * 12.22) = 13.330
+//  8*200 / ((33/42.22) * 2 * pi * 12.22) = 26.661
+// 16*200 / ((33/42.22) * 2 * pi * 12.22) = 53.322
+#define DEFAULT_AXIS_STEPS_PER_UNIT   {26.661, 26.661, 26.661, 53.322, 140.0}  // default steps per unit for Hangprinter
+#define DEFAULT_MAX_FEEDRATE          {300, 300, 300, 80, 25}    // (mm/sec)
+#define DEFAULT_MAX_ACCELERATION      {3000,3000,3000,3000,10000}    // X, Y, Z, E maximum start speed for accelerated moves. E default values are good for skeinforge 40+, for older versions raise them a lot.
 
-#define DEFAULT_ACCELERATION          3000    // X, Y, Z and E max acceleration in mm/s^2 for printing moves
+#define DEFAULT_ACCELERATION          1000    // X, Y, Z and E max acceleration in mm/s^2 for printing moves
 #define DEFAULT_RETRACT_ACCELERATION  3000   // X, Y, Z and E max acceleration in mm/s^2 for retracts
 
 #define DEFAULT_NOMINAL_FILAMENT_DIA 1.75
@@ -453,8 +467,8 @@ const bool Z_MAX_ENDSTOP_INVERTING = true; // set to true to invert the logic of
 // #define EXTRUDER_OFFSET_Y {0.0, 5.00}  // (in mm) for each extruder, offset of the hotend on the Y axis
 
 // The speed change that does not require acceleration (i.e. the software might assume it can be done instantaneously)
-#define DEFAULT_XYJERK                20.0    // (mm/sec)
-#define DEFAULT_ZJERK                 20.0    // (mm/sec) Must be same as XY for delta
+#define DEFAULT_XYJERK                13.0    // (mm/sec)
+#define DEFAULT_ZJERK                 13.0    // (mm/sec) Must be same as XY for delta
 #define DEFAULT_EJERK                 5.0    // (mm/sec)
 
 //===========================================================================

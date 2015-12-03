@@ -24,9 +24,7 @@
 #include "Marlin.h"
 #include "stepper.h"
 #include "planner.h"
-#ifdef EXTRUDERS
 #include "temperature.h"
-#endif
 #include "language.h"
 #include "cardreader.h"
 #include "speed_lookuptable.h"
@@ -307,18 +305,11 @@ ISR(TIMER1_COMPA_vect)
     if (current_block != NULL) {
       current_block->busy = true;
       trapezoid_generator_reset();
-#if defined(HANGPRINTER)
       counter_a = -(current_block->step_event_count >> 1);
       counter_b = counter_a;
       counter_c = counter_a;
       counter_d = counter_a;
       counter_e = counter_a;
-#else
-      counter_x = -(current_block->step_event_count >> 1);
-      counter_y = counter_x;
-      counter_z = counter_x;
-      counter_e = counter_x;
-#endif
       step_events_completed = 0;
     }
     else {
@@ -412,10 +403,18 @@ ISR(TIMER1_COMPA_vect)
       if (counter_a > 0) {
         WRITE(X_STEP_PIN, !INVERT_X_STEP_PIN);
         counter_a -= current_block->step_event_count;
-        count_position[A_AXIS]+=count_direction[A_AXIS];
-        // TODO: could we use these 2 microseconds for something, rather than waiting them out?
+        if(current_block->count_it){
+          count_position[A_AXIS]+=count_direction[A_AXIS];
+        }
+        // TODO: could we use the delay for something, rather than just waiting?
         // For examle read a sensor that feels if a step has been skipped?
-        _delay_us(2U); // wait 2 microseconds because of drv825 pulse width requirements
+        // Five nops tested to be shortest possible delay using atmega 2560 (16Mhz) and drv8825
+        // driver chip on a RAMPS v1.4.
+        __asm__ volatile("nop\n\t"
+                         "nop\n\t"
+                         "nop\n\t"
+                         "nop\n\t"
+                         "nop\n\t");
         WRITE(X_STEP_PIN, INVERT_X_STEP_PIN);
       }
 
@@ -423,8 +422,14 @@ ISR(TIMER1_COMPA_vect)
       if (counter_b > 0) {
         WRITE(Y_STEP_PIN, !INVERT_Y_STEP_PIN);
         counter_b -= current_block->step_event_count;
-        count_position[B_AXIS]+=count_direction[B_AXIS];
-        _delay_us(2U); // wait 2 microseconds because of drv825 pulse width requirements
+        if(current_block->count_it){
+          count_position[B_AXIS]+=count_direction[B_AXIS];
+        }
+        __asm__ volatile("nop\n\t"
+                         "nop\n\t"
+                         "nop\n\t"
+                         "nop\n\t"
+                         "nop\n\t");
         WRITE(Y_STEP_PIN, INVERT_Y_STEP_PIN);
       }
 
@@ -432,18 +437,30 @@ ISR(TIMER1_COMPA_vect)
       if (counter_c > 0) {
         WRITE(Z_STEP_PIN, !INVERT_Z_STEP_PIN);
         counter_c -= current_block->step_event_count;
-        count_position[C_AXIS]+=count_direction[C_AXIS];
-        _delay_us(2U); // wait 2 microseconds because of drv825 pulse width requirements
+        if(current_block->count_it){
+          count_position[C_AXIS]+=count_direction[C_AXIS];
+        }
+        __asm__ volatile("nop\n\t"
+                         "nop\n\t"
+                         "nop\n\t"
+                         "nop\n\t"
+                         "nop\n\t");
         WRITE(Z_STEP_PIN, INVERT_Z_STEP_PIN);
       }
       
       // D motor should be connected to E1_STEP_PIN
       counter_d += current_block->steps_d;
       if (counter_d > 0) {
-        WRITE(E1_STEP_PIN, !INVERT_E1_DIR);
+        WRITE(E1_STEP_PIN, !INVERT_E1_STEP_PIN);
         counter_d -= current_block->step_event_count;
-        count_position[D_AXIS]+=count_direction[D_AXIS];
-        _delay_us(2U); // wait 2 microseconds because of drv825 pulse width requirements
+        if(current_block->count_it){
+          count_position[D_AXIS]+=count_direction[D_AXIS];
+        }
+        __asm__ volatile("nop\n\t"
+                         "nop\n\t"
+                         "nop\n\t"
+                         "nop\n\t"
+                         "nop\n\t");
         WRITE(E1_STEP_PIN, INVERT_E1_STEP_PIN);
       }
 
@@ -451,8 +468,14 @@ ISR(TIMER1_COMPA_vect)
       if (counter_e > 0) {
         WRITE_E_STEP(!INVERT_E_STEP_PIN);
         counter_e -= current_block->step_event_count;
-        count_position[E_AXIS]+=count_direction[E_AXIS];
-        _delay_us(2U); // wait 2 microseconds because of drv825 pulse width requirements
+        if(current_block->count_it){
+          count_position[E_AXIS]+=count_direction[E_AXIS];
+        }
+        __asm__ volatile("nop\n\t"
+                         "nop\n\t"
+                         "nop\n\t"
+                         "nop\n\t"
+                         "nop\n\t");
         WRITE_E_STEP(INVERT_E_STEP_PIN);
       }
       step_events_completed += 1;
@@ -711,9 +734,7 @@ void st_init()
 void st_synchronize()
 {
   while( blocks_queued()) {
-#ifdef EXTRUDERS
     manage_heater();
-#endif // ifdef EXTRUDERS
     manage_inactivity();
   }
 }
